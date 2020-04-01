@@ -1,0 +1,75 @@
+#!/bin/bash
+Words[0]="sports"           sports=(s p o r t s)
+Words[1]="laptop"       laptop=(l a p t o p)
+Words[2]="program"      program=(p r o g r a m)
+Words[3]="hangman"    hangman=(h a n g m a n)
+Words[4]="cricket"    cricket=(c r i c k e t)
+Words[5]="badminton"   badminton=(b a d m i n t o n)
+
+picked=$(($RANDOM % 6))
+random=${Words[$picked]}
+lens=${#random}
+answer=$random
+right=()
+wrong=()
+chances=3
+echo "There are $lens letters in the word"
+if [[ $random = "sports" ]];then
+  ans=(${sports[*]})
+elif [[ $random = "laptop" ]];then
+  ans=(${laptop[*]})
+elif [[ $random = "program" ]];then
+  ans=(${program[*]})
+elif [[ $random = "hangman" ]];then
+  ans=(${hangman[*]})
+elif [[ $random = "cricket" ]];then
+  ans=(${cricket[*]})
+else 
+  ans=(${badminton[*]})
+fi
+
+len=${#answer}
+v=$(printf "%-${len}s" "_")
+
+displaystring=(${v// / _})
+echo ${displaystring[*]}
+
+
+for (( ; ; ))
+do
+   read -p "guess the letter:" letter
+l=0
+for (( l=0; l<=$len; l++ ))
+do
+    if [[ "${ans[l]}" =~ "${letter}" ]];then
+      displaystring[l]=$letter
+      echo ${displaystring[*]}
+      right+=($letter)
+    fi
+done 
+  if [[ "${#right[*]}" = "${len}" ]];then
+    echo "You guessed the right word"
+    echo "YOU WON THE GAME"
+    break
+  elif [[ "${right[*]}" =~ "$letter" ]];then
+    echo "You guessed the right letter"
+  else 
+    wrong+=($letter)
+    echo "You guessed the wrong letter"
+    echo "wrong=[${wrong[*]}]"
+    chances=$(( chances-1 ))
+    echo "chances remaining=$chances"
+  fi
+   if [[ chances -eq 0 ]];then
+     echo "You lost"
+     echo "Correct word was:: ${answer}"
+     break
+   fi
+done
+
+ 
+
+
+
+
+
