@@ -1,0 +1,90 @@
+#!/bin/bash
+list=(raj arn ved sra pal)
+list1=(956 966 775 738 988)
+len=${#list[*]}
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+for (( ; ; ))
+do
+display(){
+for (( l=0; l<$len; l++ ))
+do
+   echo "${list[l]} ${list1[l]}"
+done 
+}
+
+
+create(){
+read -p "$(echo -e ${GREEN}Enter your name:${NC})" name
+read -p "$(echo -e ${GREEN}Enter your contact number:${NC})" number
+if [[ ${list[*]} =~ $name ]];then
+  echo "Contact already exists"
+else
+  list+=($name)
+  list1+=($number)
+  len=$(( len+1 ))
+fi
+}
+
+
+search(){
+read -p "$(echo -e ${GREEN}Search a name:${NC})" nam
+for (( i=0; i<$len; i++ ))
+do
+   if [[ $nam = ${list[i]} ]];then
+      echo "$nam ${list1[i]}"
+   fi
+done
+}
+
+
+update(){
+read -p "$(echo -e ${GREEN}Enter the name whose number is to be updated:${NC})" na
+for (( j=0; j<$len; j++ ))
+do
+   if [[ ${list[j]} =~ $na ]];then
+      read -p "$(echo -e ${GREEN}Enter the new number:${NC})" num     
+      list1[j]=$num
+   fi
+done
+}
+
+
+delete(){
+read -p "$(echo -e ${GREEN}Enter your contact to be deleted:${NC})" numb
+for (( k=0; k<$len; k++ ))
+do
+   if [[ $numb = ${list[k]} ]];then
+      unset "list[k]"
+      unset "list1[k]"
+   fi  
+done
+}
+
+
+echo -e  "${YELLOW}1.Display all the contacts${NC}"
+echo -e  "${YELLOW}2.Add the contact${NC}"
+echo -e  "${YELLOW}3.Search the contact${NC}"
+echo -e  "${YELLOW}4.Update the contact${NC}"
+echo -e  "${YELLOW}5.Delete the contact${NC}"
+
+read -p "$(echo -e ${RED}Enter the choice${NC})" choice
+
+
+if [[ $choice = "1" ]];then
+   display
+elif [[ $choice = "2" ]];then
+      create
+elif [[ $choice = "3" ]];then
+     search
+elif [[ $choice = "4" ]];then
+     update
+elif [[ $choice = "5" ]];then
+     delete
+else
+   echo "You have entered wrong choice"
+fi
+done
