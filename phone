@@ -1,75 +1,84 @@
 #!/bin/bash
-list=(raj arn ved sra pal)
-list1=(956 966 775 738 988)
+list=(devendra arvind vedant michael david)
+list1=(9123456789 90987654321 71357908642 72468097531 91243568790)
 len=${#list[*]}
 GREEN='\033[1;32m'
 RED='\033[1;31m'
 YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
 NC='\033[0m'
-
-for (( ; ; ))
+> gk
+for (( ; ;))
 do
 display(){
-for (( l=0; l<$len; l++ ))
-do
-   echo "${list[l]} ${list1[l]}"
-done 
+cat gk
+> gk 
 }
-
 
 create(){
 read -p "$(echo -e ${GREEN}Enter your name:${NC})" name
 read -p "$(echo -e ${GREEN}Enter your contact number:${NC})" number
-if [[ ${list[*]} =~ $name ]];then
-  echo "Contact already exists"
-else
   list+=($name)
   list1+=($number)
   len=$(( len+1 ))
-fi
+> gk
 }
 
 
 search(){
 read -p "$(echo -e ${GREEN}Search a name:${NC})" nam
-for (( i=0; i<$len; i++ ))
-do
-   if [[ $nam = ${list[i]} ]];then
-      echo "$nam ${list1[i]}"
-   fi
-done
+grep $nam gk
+> gk
 }
 
 
 update(){
 read -p "$(echo -e ${GREEN}Enter the name whose number is to be updated:${NC})" na
+grep $na gk
 for (( j=0; j<$len; j++ ))
 do
    if [[ ${list[j]} =~ $na ]];then
-      read -p "$(echo -e ${GREEN}Enter the new number:${NC})" num     
+      read -p "$(echo -e ${GREEN}Enter the new number:${NC})" num
       list1[j]=$num
    fi
+> gk
 done
+echo -e "${BLUE}Number is updated Successfully${NC}"
 }
 
 
 delete(){
 read -p "$(echo -e ${GREEN}Enter your contact to be deleted:${NC})" numb
+grep $numb gk 
 for (( k=0; k<$len; k++ ))
 do
-   if [[ $numb = ${list[k]} ]];then
+   if [[ ${list[k]} =~ $numb ]];then
       unset "list[k]"
       unset "list1[k]"
-   fi  
+   fi
+> gk
 done
+echo -e "${BLUE}Number is deleted successfully${NC}"
 }
 
+quit(){
+exit
+}
+
+ans=(${list[*]})
+ans1=(${list1[*]})
+len=${#ans[*]}
+for (( l=0; l<$len; l++ ))
+do
+   echo "${ans[l]} ${ans1[l]}" >> gk
+done
 
 echo -e  "${YELLOW}1.Display all the contacts${NC}"
 echo -e  "${YELLOW}2.Add the contact${NC}"
 echo -e  "${YELLOW}3.Search the contact${NC}"
 echo -e  "${YELLOW}4.Update the contact${NC}"
 echo -e  "${YELLOW}5.Delete the contact${NC}"
+echo -e  "${YELLOW}6.Quit${NC}"
 
 read -p "$(echo -e ${RED}Enter the choice${NC})" choice
 
@@ -84,6 +93,8 @@ elif [[ $choice = "4" ]];then
      update
 elif [[ $choice = "5" ]];then
      delete
+elif [[ $choice = "6" ]];then
+     quit
 else
    echo "You have entered wrong choice"
 fi
