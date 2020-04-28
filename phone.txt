@@ -1,0 +1,195 @@
+#!/bin/bash
+clear
+list=()
+list1=()
+list2=()
+ans=(${list[*]})
+ans2=(${list2[*]})
+ans1=(${list1[*]})
+len=${#ans[*]}
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+MAG='\033[1;36m'
+NC='\033[0m'
+
+for (( ; ; ))
+do
+search(){
+read -p "$(echo -e ${GREEN}Enter first name:${NC})" nam
+read -p "$(echo -e ${GREEN}Enter last name:${NC})" surn
+if [[ ${res[*]} =~ "$nam" ]] && [[ ${res2[*]} =~ "$surn" ]];then
+for (( b=0; b<$leng; b++ ))
+do
+if [[ ${res[b]} =~ $nam ]] && [[ ${res2[b]} =~ $surn ]];then
+   echo "$nam $surn ${res1[b]}"
+fi
+done
+echo -e "${BLUE}Contact found${NC}"
+else
+echo -e "${BLUE}Contact does not exists${NC}"
+fi
+}
+
+
+update(){
+read -p "$(echo -e ${GREEN}Enter the first name whose contact is to be updated:${NC})" na
+read -p "$(echo -e ${GREEN}Enter the last name whose contact is to be updated:${NC})" sur
+grep $na numbers
+for (( j=0; j<$leng; j++ ))
+do
+   if [[ ${res[j]} =~ $na ]] && [[ ${res2[j]} =~ $sur ]];then
+     for (( ; ; ));do
+      read -p "$(echo -e ${GREEN}Enter the new number:${NC})" num
+      if ! [[ "$num" =~ ^[0-9]+$ ]];then
+        echo -e "${BLUE}Sorry integers only${NC}"
+      else
+        res1[j]=$num
+      fi
+      break
+     done
+   break
+   elif [[ ${res1[j]} =~ $na ]];then
+    for (( ; ; ));do
+      read -p "$(echo -e ${GREEN}Enter the new number:${NC})" num
+      if ! [[ "$num" =~ ^[0-9]+$ ]];then
+        echo -e "${BLUE}Sorry integers only${NC}"
+      else
+        res1[j]=$num
+        break
+      fi
+     done
+   fi
+done
+> contacts
+for (( z=0; z<$leng; z++ ))
+do
+   echo -e "${res[z]}," "${res2[z]}," "${res1[z]}" >> gk
+done 
+column gk -t -s "," >> gg 
+cat gg >> contacts
+> numbers
+cat contacts >> numbers 
+echo -e "${BLUE}Number is updated Successfully${NC}"
+> gk
+> gg
+}
+
+
+delete(){
+read -p "$(echo -e ${GREEN}Enter the first name of the contact to be deleted:${NC})" numb
+read -p "$(echo -e ${GREEN}Enter the last name of the contact to be deleted:${NC})" surna
+for (( c=0; c<$leng; c++ ))
+do
+if [[ ${res[c]} =~ $numb ]] && [[ ${res2[c]} =~ $surna ]];then
+   unset -v 'res[c]'
+   unset -v 'res2[c]'
+   unset -v 'res1[c]'
+fi
+done
+for (( d=0; d<$leng; d++ ))
+do
+   echo -e "${res[d]}," "${res2[d]}," "${res1[d]}" >> gk
+ done 
+> contacts
+column gk -t -s "," >> gg 
+cat gg >> contacts
+> numbers
+cat contacts >> numbers 
+
+> gk
+> gg
+
+echo -e "${BLUE}Number is deleted successfully${NC}"
+}
+
+quit(){
+exit
+}
+
+create(){
+read -p "$(echo -e ${GREEN}Enter your first name:${NC})" name
+ans+=("$name,")
+read -p "$(echo -e ${GREEN}Enter your last name:${NC})" surname
+ans2+=("$surname,")
+for (( ; ; ));do
+      read -p "$(echo -e ${GREEN}Enter your contact number:${NC})" number
+      if ! [[ "$number" =~ ^[0-9]+$ ]];then
+        echo -e "${BLUE}Sorry integers only${NC}"
+      else
+          ans1+=("$number")
+        break
+      fi
+     done
+  len=$(( len+1 ))
+for (( l=0; l<$len; l++ ))
+do
+   echo -e "${ans[l]}" "${ans2[l]}" "${ans1[l]}" >> gk
+done
+column gk -t -s "," >> gg
+cat gg >> contacts 
+> numbers 
+awk '!seen[$3]++' contacts >> numbers
+  echo -e "${BLUE}Contact is created successfully${NC}"
+echo ${res[*]}
+echo ${res1[*]}
+> gk
+> gg
+}
+
+display(){
+clear
+echo -e "${MAG}********************************************${NC}"
+echo -e "${GREEN}               R E C O R D                ${NC}"
+echo -e "${MAG}********************************************${NC}"
+for (( y=0; y<$leng; y++ ))
+do
+echo -e "${res[y]}," "${res2[y]}," "${res1[y]}" >> h
+done
+column h -t -s "," >> e
+sort -k 1 e >> g
+cat g
+> gk
+> h
+> e
+> g
+}
+arr=($(awk -F"   " '{print $1}' numbers))
+arr2=($(awk -F"   " '{print $2}' numbers))
+arr1=($(awk '{print $3}' numbers))
+res=(${arr[*]})
+res2=(${arr2[*]})
+res1=(${arr1[*]})
+leng=${#res[*]}
+
+echo -e "${MAG}==============================================${NC}"
+echo -e  "${YELLOW}1.Display all the contacts${NC}"
+echo -e  "${YELLOW}2.Add the contact${NC}"
+echo -e  "${YELLOW}3.Search the contact${NC}"
+echo -e  "${YELLOW}4.Update the contact${NC}"
+echo -e  "${YELLOW}5.Delete the contact${NC}"
+echo -e  "${YELLOW}6.Quit${NC}"
+
+echo -e "${MAG}===============================================${NC}"
+read -p "$(echo -e ${RED}Enter the option:${NC})" choice
+echo -e "${MAG}===============================================${NC}"
+
+if [[ $choice = "1" ]];then
+    display
+elif [[ $choice = "2" ]];then
+      create
+elif [[ $choice = "3" ]];then
+     search
+elif [[ $choice = "4" ]];then
+     update
+elif [[ $choice = "5" ]];then
+     delete
+elif [[ $choice = "6" ]];then
+     quit
+else
+   echo "You have entered wrong choice"
+  > gk
+ > gg
+fi
+done
